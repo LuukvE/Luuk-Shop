@@ -1,51 +1,49 @@
-import { FC, useState } from "react";
+import { FC } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 
 import "./App.scss";
 import Success from "./Success";
-import { FormState } from "./types";
+import { useSelector, useDispatch, actions } from "./store";
 
 const App: FC = () => {
-  const [obj, setObj] = useState<FormState>(null);
+  const dispatch = useDispatch();
+  const { error, name, submitted } = useSelector((state) => state);
 
   return (
     <div className="App">
       <h1>Hello, World!</h1>
+      <strong>{error}</strong>
       <Form
         onSubmit={(e) => {
           e.preventDefault();
 
-          if (!obj?.name) return;
+          if (!name) return;
 
-          setObj(
-            obj.submitted
-              ? null
-              : {
-                  ...obj,
-                  submitted: new Date(),
-                }
+          dispatch(
+            actions.set({
+              submitted: new Date().toJSON(),
+            })
           );
         }}
       >
         <Form.Control
           placeholder="Name"
-          value={obj?.name || ""}
+          value={name}
           onChange={(e) => {
-            setObj({
-              name: e.target.value,
-              submitted: obj?.submitted,
-            });
+            dispatch(
+              actions.set({
+                name: e.target.value,
+              })
+            );
           }}
         />
         <Button type="submit">
-          {obj?.submitted
-            ? `Submitted ${obj.submitted.toJSON()}`
-            : "Not submitted"}
+          {submitted ? `Submitted ${submitted}` : "Not submitted"}
         </Button>
       </Form>
 
-      {obj?.submitted && <Success name={obj?.name || ""} />}
+      {submitted && <Success />}
     </div>
   );
 };

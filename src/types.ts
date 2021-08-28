@@ -1,4 +1,5 @@
-export type FormState = {
+export type State = {
+  error: string;
   name: string;
-  submitted?: Date;
-} | null;
+  submitted: string;
+};
